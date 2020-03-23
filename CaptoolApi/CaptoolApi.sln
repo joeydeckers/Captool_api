@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CaptoolApi", "CaptoolApi\CaptoolApi.csproj", "{E80A0FE8-694E-495D-87F1-6E13DF2D6395}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{FBA9DA52-CBA9-48F0-9C88-BC8772F71F51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{FBA9DA52-CBA9-48F0-9C88-BC8772F71F51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces\Interfaces.csproj", "{733D3D44-7B5B-4527-947C-11C97E519A7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interfaces", "Interfaces\Interfaces.csproj", "{733D3D44-7B5B-4527-947C-11C97E519A7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelLayer", "ModelLayer\ModelLayer.csproj", "{BDA184D9-1834-420B-B712-9E9C2F9CE39E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelLayer", "ModelLayer\ModelLayer.csproj", "{BDA184D9-1834-420B-B712-9E9C2F9CE39E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "Logic\Logic.csproj", "{9D4A6CED-E5F9-496D-B23A-51303C8C247F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{BDA184D9-1834-420B-B712-9E9C2F9CE39E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDA184D9-1834-420B-B712-9E9C2F9CE39E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDA184D9-1834-420B-B712-9E9C2F9CE39E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D4A6CED-E5F9-496D-B23A-51303C8C247F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D4A6CED-E5F9-496D-B23A-51303C8C247F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D4A6CED-E5F9-496D-B23A-51303C8C247F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4A6CED-E5F9-496D-B23A-51303C8C247F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
