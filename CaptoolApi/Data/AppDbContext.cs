@@ -13,7 +13,7 @@ namespace Data
         { 
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> ct_user { get; set; }
 
 
     }

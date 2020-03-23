@@ -34,7 +34,7 @@ namespace Logic.Repositories
 
         public DbSet<User> GetAll()
         {
-            return _context.Users;
+            return _context.ct_user;
         }
 
         public User Update(User userChanges)

@@ -30,7 +30,7 @@ namespace CaptoolApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("MySQL")));
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
