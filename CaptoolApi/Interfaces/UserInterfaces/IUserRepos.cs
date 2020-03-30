@@ -9,9 +9,10 @@ namespace Interfaces.UserInterfaces
     public interface IUserRepos
     {
         User Add(User user);
-        User Delete(int id);
+        User Delete(User user);
         DbSet<User> GetAll();
-        User Get(int id);
+        User Get(int? id);
         User Update(User userChanges);
+        User TryLogin(string email, string password);
     }
 }
