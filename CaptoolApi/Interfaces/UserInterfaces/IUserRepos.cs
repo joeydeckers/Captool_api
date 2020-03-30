@@ -9,10 +9,12 @@ namespace Interfaces.UserInterfaces
 {
     public interface IUserRepos
     {
-        Task<User> Add(User user);
-        Task Delete(int id);
         Task<List<User>> GetAll();
-        Task<User> GetAsync(int id);
+        Task<User> GetAsync(int? id);
+        Task<User> Login(string email, string password);
+        Task<bool> IsEmailAvailable(string email);
+        Task<User> Add(User user);
+        Task Delete(int? id);
         Task UpdateAsync(User userChanges);
         Task SaveAsync();
     }

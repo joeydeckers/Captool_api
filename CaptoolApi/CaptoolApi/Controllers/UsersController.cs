@@ -14,25 +14,25 @@ namespace CaptoolApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepos _userRepo;
+        private readonly IUserRepos _userRepos;
 
-        public UsersController(IUserRepos userRepo)
+        public UsersController(IUserRepos userRepos)
         {
-            _userRepo = userRepo;
+            _userRepos = userRepos;
         }
 
         // GET: api/Users
         [HttpGet]
-        public ActionResult<IEnumerable<User>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return _userRepo.GetAll();
+            return await _userRepos.GetAll();
         }
 
-        // GET: api/Users/5
+        // GET: api/Users/id
         [HttpGet("{id}")]
-        public ActionResult<User> GetUser(int id)
+        public async Task<ActionResult<User>> GetUser(int? id)
         {
-            var user = _userRepo.Get(id);
+            var user = await _userRepos.GetAsync(id);
 
             if (user == null) return NotFound();
 
@@ -41,37 +41,43 @@ namespace CaptoolApi.Controllers
 
         // GET: api/Users/email/password
         [HttpGet("{email}/{password}")]
-        public ActionResult<User> Login(string email, string password)
+        public async Task<ActionResult<User>> Login(string email, string password)
         {
-            var user = _userRepo.TryLogin(email, password);
-                
+            var user = await _userRepos.Login(email, password);
+
             if (user == null) return NotFound();
 
             return user;
+        }
+
+        // GET: api/Users/email
+        [HttpGet("[action]/{email}")]
+        public async Task<ActionResult<bool>> IsEmailAvailable(string email)
+        {
+            return await _userRepos.IsEmailAvailable(email);
         }
 
         // POST: api/Users
         [HttpPost]
-        public ActionResult<User> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(User user)
         {
-            _userRepo.Add(user);
-            // await _userRepo.SaveChangesAsync(); 
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return await _userRepos.Add(user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public ActionResult<User> DeleteUser(int? id)
+        public async Task<ActionResult<User>> DeleteUser(int? id)
         {
-            var user = _userRepo.Get(id);
+            await _userRepos.Delete(id);
+            return NoContent();
+        }
 
-            if (user == null) return NotFound();
-            
-            _userRepo.Delete(user);
-            // await _userRepo.SaveChangesAsync();
-
-            return user;
+        // PUT: api/Users/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutUser(int? id, User user)
+        {
+            await _userRepos.UpdateAsync(user);
+            return NoContent();
         }
     }
 }
