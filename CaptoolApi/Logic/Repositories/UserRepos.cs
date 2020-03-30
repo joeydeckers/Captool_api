@@ -18,36 +18,44 @@ namespace Logic.Repositories
             _context = context;
         }
 
-        public User Add(User user)
+        public async Task<User> Add(User user)
         {
-            //await _context.SaveChangesAsync();
-            throw new NotImplementedException();
+            await _context.ct_user.AddAsync(user);
+            await SaveAsync();
+            return user;
         }
 
-        public User Delete(User user)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            User user = await _context.ct_user.FindAsync(id);
+            if (user != null)
+            {
+                _context.ct_user.Remove(user);
+                await SaveAsync();
+
+            }
         }
 
-        public User Get(int? id)
+        public async Task<List<User>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.ct_user.ToListAsync();
         }
 
-        public DbSet<User> GetAll()
+        public async Task<User> GetAsync(int id)
         {
-            return _context.ct_user;
+            return await _context.ct_user.FindAsync(id);
         }
 
-        public User TryLogin(string email, string password)
+        public async Task SaveAsync()
         {
-            //return await _context.FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
-        public User Update(User userChanges)
+        public async Task UpdateAsync(User userChanges)
         {
-            throw new NotImplementedException();
+            var user = _context.ct_user.Attach(userChanges);
+            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
