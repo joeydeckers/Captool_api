@@ -16,6 +16,5 @@ namespace Interfaces.UserInterfaces
         Task<User> Add(User user);
         Task Delete(int? id);
         Task UpdateAsync(User userChanges);
-        Task SaveAsync();
     }
 }
