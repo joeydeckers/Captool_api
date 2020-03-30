@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Interfaces.UserInterfaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace CaptoolApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowOrigin")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepos _userRepos;
@@ -39,16 +41,28 @@ namespace CaptoolApi.Controllers
             return user;
         }
 
-        // GET: api/Users/email/password
-        [HttpGet("{email}/{password}")]
-        public async Task<ActionResult<User>> Login(string email, string password)
+        public class LoginViewModel
         {
-            var user = await _userRepos.Login(email, password);
-
-            if (user == null) return NotFound();
-
-            return user;
+            public string Email { get; set; }
+            public string Password { get; set; }
         }
+
+        // GET: api/Users/email/password
+        //[HttpPost("[action]")]
+        //public async Task<ActionResult<User>> Login([FromForm] string email, string password)
+        //{
+        //    var user = await _userRepos.Login(email, password);
+
+        //    if (user == null) return NotFound();
+
+        //    return user;
+        //}
+
+        //[HttpPost("[action]")]
+        //public ActionResult Test()
+        //{
+        //    return Content("test");
+        //}
 
         // GET: api/Users/email
         [HttpGet("[action]/{email}")]
@@ -58,13 +72,13 @@ namespace CaptoolApi.Controllers
         }
 
         // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [HttpPost("[action]")] // api/Users/PostUser
+        public async Task<ActionResult<User>> PostUser([FromForm] User user)
         {
             return await _userRepos.Add(user);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Users/id
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(int? id)
         {
@@ -72,7 +86,7 @@ namespace CaptoolApi.Controllers
             return NoContent();
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Users/id
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int? id, User user)
         {
