@@ -14,6 +14,5 @@ namespace Interfaces.UserInterfaces
         Task<List<User>> GetAll();
         Task<User> GetAsync(int id);
         Task UpdateAsync(User userChanges);
-        Task SaveAsync();
     }
 }

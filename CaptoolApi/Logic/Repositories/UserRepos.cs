@@ -21,7 +21,7 @@ namespace Logic.Repositories
         public async Task<User> Add(User user)
         {
             await _context.ct_user.AddAsync(user);
-            await SaveAsync();
+            await _context.SaveChangesAsync();
             return user;
         }
 
@@ -31,7 +31,7 @@ namespace Logic.Repositories
             if (user != null)
             {
                 _context.ct_user.Remove(user);
-                await SaveAsync();
+                await _context.SaveChangesAsync();
 
             }
         }
@@ -44,11 +44,6 @@ namespace Logic.Repositories
         public async Task<User> GetAsync(int id)
         {
             return await _context.ct_user.FindAsync(id);
-        }
-
-        public async Task SaveAsync()
-        {
-            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(User userChanges)
