@@ -5,6 +5,7 @@ using ModelLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Logic.Repositories
 {
@@ -17,29 +18,44 @@ namespace Logic.Repositories
             _context = context;
         }
 
-        public User Add(User user)
+        public async Task<User> Add(User user)
         {
-            throw new NotImplementedException();
+            await _context.ct_user.AddAsync(user);
+            await SaveAsync();
+            return user;
         }
 
-        public User Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            User user = await _context.ct_user.FindAsync(id);
+            if (user != null)
+            {
+                _context.ct_user.Remove(user);
+                await SaveAsync();
+
+            }
         }
 
-        public User Get(int id)
+        public async Task<List<User>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.ct_user.ToListAsync();
         }
 
-        public DbSet<User> GetAll()
+        public async Task<User> GetAsync(int id)
         {
-            return _context.ct_user;
+            return await _context.ct_user.FindAsync(id);
         }
 
-        public User Update(User userChanges)
+        public async Task SaveAsync()
         {
-            throw new NotImplementedException();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(User userChanges)
+        {
+            var user = _context.ct_user.Attach(userChanges);
+            user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
