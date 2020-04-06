@@ -13,7 +13,7 @@ namespace CaptoolApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowOrigin")]
+    
     public class UsersController : ControllerBase
     {
         private readonly IUserRepos _userRepos;
