@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,23 +33,23 @@ namespace CaptoolApi
         {
             services.AddControllers();
             services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("MySQL")));
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-            });
+            services.AddCors();
 
             // Add other services here:
             services.AddScoped<IUserRepos, UserRepos>();
+            services.AddMvc();
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors("CorsPolicy");
+            app.UseCors(
+                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+            );
+
 
             if (env.IsDevelopment())
             {
