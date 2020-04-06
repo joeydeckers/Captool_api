@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CaptoolApi.ViewModels;
 using Interfaces.UserInterfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,6 @@ namespace CaptoolApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowOrigin")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepos _userRepos;
@@ -21,13 +21,6 @@ namespace CaptoolApi.Controllers
         public UsersController(IUserRepos userRepos)
         {
             _userRepos = userRepos;
-        }
-
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        {
-            return await _userRepos.GetAll();
         }
 
         // GET: api/Users/id
@@ -41,41 +34,29 @@ namespace CaptoolApi.Controllers
             return user;
         }
 
-        public class LoginViewModel
+        // GET: api/Users/Login
+        [HttpPost("[action]")]
+        public async Task<ActionResult<User>> Login([FromBody] LoginViewModel viewModel)
         {
-            public string Email { get; set; }
-            public string Password { get; set; }
+            var user = await _userRepos.Login(viewModel.Email, viewModel.Password);
+
+            if (user == null) return NotFound();
+
+            return user;
         }
 
-        // GET: api/Users/email/password
-        //[HttpPost("[action]")]
-        //public async Task<ActionResult<User>> Login([FromForm] string email, string password)
-        //{
-        //    var user = await _userRepos.Login(email, password);
-
-        //    if (user == null) return NotFound();
-
-        //    return user;
-        //}
-
-        //[HttpPost("[action]")]
-        //public ActionResult Test()
-        //{
-        //    return Content("test");
-        //}
+        // POST: api/Users/PostUser
+        [HttpPost("[action]")]
+        public async Task<ActionResult<User>> PostUser([FromBody] User user)
+        {
+            return await _userRepos.Add(user);
+        }
 
         // GET: api/Users/email
         [HttpGet("[action]/{email}")]
         public async Task<ActionResult<bool>> IsEmailAvailable(string email)
         {
             return await _userRepos.IsEmailAvailable(email);
-        }
-
-        // POST: api/Users
-        [HttpPost("[action]")] // api/Users/PostUser
-        public async Task<ActionResult<User>> PostUser([FromForm] User user)
-        {
-            return await _userRepos.Add(user);
         }
 
         // DELETE: api/Users/id
@@ -87,11 +68,11 @@ namespace CaptoolApi.Controllers
         }
 
         // PUT: api/Users/id
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int? id, User user)
-        {
-            await _userRepos.UpdateAsync(user);
-            return NoContent();
-        }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutUser(int? id, User user)
+        //{
+        //    await _userRepos.UpdateAsync(user);
+        //    return NoContent();
+        //}
     }
 }

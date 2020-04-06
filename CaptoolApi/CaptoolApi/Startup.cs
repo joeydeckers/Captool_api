@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Data;
 using Interfaces.UserInterfaces;
 using Logic.Repositories;
@@ -42,8 +43,6 @@ namespace CaptoolApi
 
             // Add other services here:
             services.AddScoped<IUserRepos, UserRepos>();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

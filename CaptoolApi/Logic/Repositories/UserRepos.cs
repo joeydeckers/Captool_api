@@ -19,11 +19,6 @@ namespace Logic.Repositories
             _context = context;
         }
 
-        public async Task<List<User>> GetAll()
-        {
-            return await _context.ct_user.ToListAsync();
-        }
-
         public async Task<User> GetAsync(int? id)
         {
             return await _context.ct_user.FindAsync(id);

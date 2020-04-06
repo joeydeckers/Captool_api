@@ -9,7 +9,6 @@ namespace Interfaces.UserInterfaces
 {
     public interface IUserRepos
     {
-        Task<List<User>> GetAll();
         Task<User> GetAsync(int? id);
         Task<User> Login(string email, string password);
         Task<bool> IsEmailAvailable(string email);
