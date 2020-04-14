@@ -20,6 +20,7 @@ namespace CaptoolApi
 {
     public class Startup
     {
+        readonly string MyAllowOrigins = "_origins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,9 +31,14 @@ namespace CaptoolApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+                options.AddPolicy(name: MyAllowOrigins,
+                builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                }));
             services.AddControllers();
             services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("MySQL")));
-            services.AddCors();
 
             // Add other services here:
             services.AddScoped<IUserRepos, UserRepos>();
@@ -45,9 +51,7 @@ namespace CaptoolApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors(
-                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
-            );
+
 
 
             if (env.IsDevelopment())
@@ -58,6 +62,8 @@ namespace CaptoolApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowOrigins);
 
             app.UseAuthorization();
 
