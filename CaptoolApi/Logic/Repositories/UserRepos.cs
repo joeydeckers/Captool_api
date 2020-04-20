@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using ModelLayer.ViewModels;
 
 namespace Logic.Repositories
 {
@@ -24,9 +25,9 @@ namespace Logic.Repositories
             return await _context.ct_user.FindAsync(id);
         }
 
-        public async Task<User> Login(string email, string password)
+        public User Login(LoginViewModel login)
         {
-            return await _context.ct_user.FirstOrDefaultAsync(x => x.Email == email && x.Password == password);
+            return _context.ct_user.FirstOrDefault(x => x.Email == login.Email && x.Password == login.Password);
         }
 
         public async Task<bool> IsEmailAvailable(string email)

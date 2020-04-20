@@ -4,13 +4,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ModelLayer.Models;
+using ModelLayer.ViewModels;
 
 namespace Interfaces.UserInterfaces
 {
     public interface IUserRepos
     {
         Task<User> GetAsync(int? id);
-        Task<User> Login(string email, string password);
+        User Login(LoginViewModel login);
         Task<bool> IsEmailAvailable(string email);
         Task<User> Add(User user);
         Task Delete(int? id);

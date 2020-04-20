@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CaptoolApi.ViewModels
+namespace ModelLayer.ViewModels
 {
     public class LoginViewModel
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CaptoolApi.ViewModels;
+using ModelLayer.ViewModels;
 using Interfaces.UserInterfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -42,20 +42,17 @@ namespace CaptoolApi.Controllers
             return user;
         }
 
-        // GET: api/Users/Login
-        [HttpGet("login")]
-        public IActionResult Login(string email, string password)
+        // POST: api/Users/Login
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginViewModel loginViewModel)
         {
-            LoginViewModel login = new LoginViewModel();
-            login.Email = email;
-            login.Password = password;
             IActionResult response = Unauthorized();
 
-            var user = AuthenticateUser(login);
+            var user = _userRepos.Login(loginViewModel);
 
             if (user != null)
             {
-                var tokenStr = GenerateJSONWebToken(user);
+                var tokenStr = GenerateJSONWebToken(loginViewModel);
                 response = Ok(new { token = tokenStr });
             }
 
@@ -84,17 +81,21 @@ namespace CaptoolApi.Controllers
             return NoContent();
         }
 
-        private LoginViewModel AuthenticateUser(LoginViewModel login)
-        {
-            LoginViewModel user = null;
-            //static info
-            if (login.Email == "test@test.test" && login.Password == "test")
-            {
-                user = new LoginViewModel { Email = "test@test.test", Password = "test" };
+        //private async LoginViewModel AuthenticateUser(LoginViewModel login)
+        //{
+        //    var user = await _userRepos.Login(login.Email, login.Password);
 
-            }
-            return user;
-        }
+        //    if (user == null) return NotFound();
+
+        //    return user;
+        //    //LoginViewModel user = null;
+        //    ////static info
+        //    //if (login.Email == "test@test.test" && login.Password == "test")
+        //    //{
+        //    //    user = new LoginViewModel { Email = "test@test.test", Password = "test" };
+        //    //}
+        //    //return user;
+        //}
 
         private string GenerateJSONWebToken(LoginViewModel userinfo)
         {
@@ -117,13 +118,5 @@ namespace CaptoolApi.Controllers
             var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);
             return encodetoken;
         }
-
-        // PUT: api/Users/id
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutUser(int? id, User user)
-        //{
-        //    await _userRepos.UpdateAsync(user);
-        //    return NoContent();
-        //}
     }
 }
