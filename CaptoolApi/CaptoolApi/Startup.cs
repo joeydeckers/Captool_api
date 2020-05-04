@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data;
 using Interfaces.UserInterfaces;
+using Logic;
 using Logic.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -60,6 +61,7 @@ namespace CaptoolApi
                     };
                 });
             services.AddScoped<IUserRepos, UserRepos>();
+            services.AddScoped<IUserLogic, UserLogic>();
             services.AddMvc();
 
         }

@@ -15,6 +15,8 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Logic;
+
 
 namespace CaptoolApi.Controllers
 {
@@ -22,13 +24,13 @@ namespace CaptoolApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepos _userRepos;
-        private IConfiguration _config;
+        private IUserRepos _userRepos;
+        private IUserLogic _userLogic;
 
-        public UsersController(IUserRepos userRepos, IConfiguration config)
+        public UsersController(IUserRepos userRepos, IUserLogic userlogic)
         {
             _userRepos = userRepos;
-            _config = config;
+            _userLogic = userlogic;
         }
 
         // GET: api/Users/id
@@ -42,24 +44,16 @@ namespace CaptoolApi.Controllers
             return user;
         }
 
-        // GET: api/Users/Login
-        [HttpGet("login")]
-        public IActionResult Login(string email, string password)
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody]LoginViewModel model)
         {
-            LoginViewModel login = new LoginViewModel();
-            login.Email = email;
-            login.Password = password;
-            IActionResult response = Unauthorized();
+            var user = _userLogic.Authenticate(model.Email, model.Password);
 
-            var user = AuthenticateUser(login);
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            if (user != null)
-            {
-                var tokenStr = GenerateJSONWebToken(user);
-                response = Ok(new { token = tokenStr });
-            }
-
-            return response;
+            return Ok(user);
         }
 
         // POST: api/Users/PostUser
@@ -82,40 +76,6 @@ namespace CaptoolApi.Controllers
         {
             await _userRepos.Delete(id);
             return NoContent();
-        }
-
-        private LoginViewModel AuthenticateUser(LoginViewModel login)
-        {
-            LoginViewModel user = null;
-            //static info
-            if (login.Email == "test@test.test" && login.Password == "test")
-            {
-                user = new LoginViewModel { Email = "test@test.test", Password = "test" };
-
-            }
-            return user;
-        }
-
-        private string GenerateJSONWebToken(LoginViewModel userinfo)
-        {
-            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Email,userinfo.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);
-            return encodetoken;
         }
 
         // PUT: api/Users/id
