@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data;
+using Interfaces.CaptionInterfaces;
 using Interfaces.UserInterfaces;
 using Logic.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -59,7 +60,10 @@ namespace CaptoolApi
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
+
             services.AddScoped<IUserRepos, UserRepos>();
+            services.AddScoped<ICaptionRepos, CaptionRepos>();
+
             services.AddMvc();
 
         }

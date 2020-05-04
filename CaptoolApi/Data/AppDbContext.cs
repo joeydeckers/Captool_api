@@ -14,7 +14,7 @@ namespace Data
         }
 
         public DbSet<User> ct_user { get; set; }
-
+        public DbSet<CaptionFile> ct_captions { get; set; }
 
     }
 }

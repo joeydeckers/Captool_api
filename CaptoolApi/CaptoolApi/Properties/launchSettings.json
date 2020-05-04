@@ -20,7 +20,7 @@
     "CaptoolApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "api/Users",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
