@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using ModelLayer.ViewModels;
+using System.Web.Helpers;
 
 namespace Logic.Repositories
 {
@@ -41,6 +42,7 @@ namespace Logic.Repositories
 
         public async Task<User> Add(User user)
         {
+            user.Password = Crypto.HashPassword(user.Password);
             await _context.ct_user.AddAsync(user);
             await SaveAsync();
             return user;
@@ -66,6 +68,11 @@ namespace Logic.Repositories
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public User GetByEmail(string email)
+        {
+            return _context.ct_user.FirstOrDefault(x => x.Email == email);
         }
     }
 }
