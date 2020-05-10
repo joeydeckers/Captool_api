@@ -14,9 +14,9 @@ namespace CaptoolApi.Controllers
     { 
         private readonly ICaptionRepos _captionsRepos;
 
-        public CaptionsController(ICaptionRepos userRepos)
+        public CaptionsController(ICaptionRepos captionrepos)
         {
-            _captionsRepos = userRepos;
+            _captionsRepos = captionrepos;
         }
 
         // GET: api/Captions/id
@@ -24,7 +24,7 @@ namespace CaptoolApi.Controllers
         public async Task<ActionResult<string>> GetCaptions(string id)
         {
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-            string text = caption.Text;
+            string text = caption.Data;
             
             if (caption == null) return NotFound();
 
@@ -32,7 +32,7 @@ namespace CaptoolApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<CaptionFile>> PostUser([FromBody]CaptionFile caption)
+        public async Task<ActionResult<CaptionFile>> PostCaption([FromBody]CaptionFile caption)
         { 
             return await _captionsRepos.addCaptionAsync(caption);
         }
