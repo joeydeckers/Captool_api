@@ -11,7 +11,7 @@ namespace Interfaces.UserInterfaces
     public interface IUserRepos
     {
         Task<User> GetAsync(int? id);
-        User Login(LoginViewModel login);
+        User Login(string email, string password);
         User GetByEmail(string email);
         Task<bool> IsEmailAvailable(string email);
         Task<User> Add(User user);

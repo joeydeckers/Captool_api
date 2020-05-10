@@ -9,40 +9,49 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Web.Helpers;
+using Interfaces;
+using Helper;
+using Microsoft.Extensions.Options;
 
 namespace Logic.Logic
 {
-    public class AuthLogic
+    public class AuthLogic : IAuthLogic
     {
         private readonly IConfiguration _config;
         private readonly IUserRepos _userRepos;
+        private readonly AppSettings _appSettings;
 
-        public AuthLogic(IConfiguration config, IUserRepos userRepos)
+        public AuthLogic(IConfiguration config, IUserRepos userRepos, IOptions<AppSettings> appSettings)
         {
             _config = config;
             _userRepos = userRepos;
+            _appSettings = appSettings.Value;
         }
 
-        public string GenerateJWT(User user)
+        public User GenerateJWT(string email, string password)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var user = _userRepos.Login(email, password);
 
-            var claims = new[]
+            // return null if user not found
+            if (user == null)
+                return null;
+
+            // authentication successful so generate jwt token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            user.Token = tokenHandler.WriteToken(token);
 
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            var encodeToken = new JwtSecurityTokenHandler().WriteToken(token);
-            return encodeToken;
+            return user;
         }
 
         public User AuthenticateUser(LoginViewModel login)

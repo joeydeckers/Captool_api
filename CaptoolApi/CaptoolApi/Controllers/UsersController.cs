@@ -15,6 +15,8 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Logic;
+using Logic.Logic;
 
 namespace CaptoolApi.Controllers
 {
@@ -24,11 +26,13 @@ namespace CaptoolApi.Controllers
     {
         private readonly IUserRepos _userRepos;
         private IConfiguration _config;
+        private IAuthLogic _Authlogic;
 
-        public UsersController(IUserRepos userRepos, IConfiguration config)
+        public UsersController(IUserRepos userRepos, IConfiguration config, IAuthLogic authLogic)
         {
             _userRepos = userRepos;
             _config = config;
+            _Authlogic = authLogic;
         }
 
         // GET: api/Users/id
@@ -46,17 +50,12 @@ namespace CaptoolApi.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginViewModel loginViewModel)
         {
-            IActionResult response = Unauthorized();
+            var user = _Authlogic.GenerateJWT(loginViewModel.Email, loginViewModel.Password);
 
-            var user = _userRepos.Login(loginViewModel);
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            if (user != null)
-            {
-                var tokenStr = GenerateJSONWebToken(loginViewModel);
-                response = Ok(new { token = tokenStr });
-            }
-
-            return response;
+            return Ok(user);
         }
 
         // POST: api/Users/PostUser
@@ -96,27 +95,5 @@ namespace CaptoolApi.Controllers
         //    //}
         //    //return user;
         //}
-
-        private string GenerateJSONWebToken(LoginViewModel userinfo)
-        {
-            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Email,userinfo.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);
-            return encodetoken;
-        }
     }
 }
