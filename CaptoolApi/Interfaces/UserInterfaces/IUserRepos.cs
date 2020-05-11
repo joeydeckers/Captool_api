@@ -12,7 +12,7 @@ namespace Interfaces.UserInterfaces
     {
         Task<User> GetAsync(int? id);
         User Login(LoginViewModel login);
-        User GetByEmail(string email);
+        Task<User> GetByEmail(string email);
         Task<bool> IsEmailAvailable(string email);
         Task<User> Add(User user);
         Task Delete(int? id);

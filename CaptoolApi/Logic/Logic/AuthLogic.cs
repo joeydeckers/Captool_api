@@ -12,7 +12,7 @@ using System.Web.Helpers;
 
 namespace Logic.Logic
 {
-    public class AuthLogic
+    public class AuthLogic : IAuthLogic
     {
         private readonly IConfiguration _config;
         private readonly IUserRepos _userRepos;

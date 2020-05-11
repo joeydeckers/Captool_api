@@ -15,6 +15,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Logic.Logic;
 
 namespace CaptoolApi.Controllers
 {
@@ -23,37 +24,40 @@ namespace CaptoolApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepos _userRepos;
-        private IConfiguration _config;
+        private readonly IAuthLogic _authLogic;
 
-        public UsersController(IUserRepos userRepos, IConfiguration config)
+        public UsersController(IUserRepos userRepos, IAuthLogic authLogic)
         {
             _userRepos = userRepos;
-            _config = config;
+            _authLogic = authLogic;
         }
 
         // GET: api/Users/id
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int? id)
+        public async Task<ActionResult<User>> GetUser()
         {
-            var user = await _userRepos.GetAsync(id);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            IList<Claim> claim = identity.Claims.ToList();
+            var email = claim[0].Value;
+            
+            var user = await _userRepos.GetByEmail(email);
 
             if (user == null) return NotFound();
 
             return user;
         }
 
-        // POST: api/Users/Login
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginViewModel loginViewModel)
+        [HttpPost("[action]")]
+        public IActionResult Login ([FromBody]LoginViewModel login)
         {
             IActionResult response = Unauthorized();
 
-            var user = _userRepos.Login(loginViewModel);
+            var user = _authLogic.AuthenticateUser(login);
 
             if (user != null)
             {
-                var tokenStr = GenerateJSONWebToken(loginViewModel);
-                response = Ok(new { token = tokenStr });
+                var tokenString = _authLogic.GenerateJWT(user);
+                response = Ok(new { token = tokenString });
             }
 
             return response;
@@ -79,44 +83,6 @@ namespace CaptoolApi.Controllers
         {
             await _userRepos.Delete(id);
             return NoContent();
-        }
-
-        //private async LoginViewModel AuthenticateUser(LoginViewModel login)
-        //{
-        //    var user = await _userRepos.Login(login.Email, login.Password);
-
-        //    if (user == null) return NotFound();
-
-        //    return user;
-        //    //LoginViewModel user = null;
-        //    ////static info
-        //    //if (login.Email == "test@test.test" && login.Password == "test")
-        //    //{
-        //    //    user = new LoginViewModel { Email = "test@test.test", Password = "test" };
-        //    //}
-        //    //return user;
-        //}
-
-        private string GenerateJSONWebToken(LoginViewModel userinfo)
-        {
-            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Email,userinfo.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            var encodetoken = new JwtSecurityTokenHandler().WriteToken(token);
-            return encodetoken;
         }
     }
 }

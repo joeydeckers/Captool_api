@@ -70,9 +70,9 @@ namespace Logic.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public User GetByEmail(string email)
+        public async Task<User> GetByEmail(string email)
         {
-            return _context.ct_user.FirstOrDefault(x => x.Email == email);
+            return await _context.ct_user.FirstOrDefaultAsync(x => x.Email == email);
         }
     }
 }
