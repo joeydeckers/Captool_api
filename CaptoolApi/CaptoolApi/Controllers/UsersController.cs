@@ -48,11 +48,11 @@ namespace CaptoolApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult Login ([FromBody]LoginViewModel login)
+        public async Task<IActionResult> Login ([FromBody]LoginViewModel login)
         {
             IActionResult response = Unauthorized();
 
-            var user = _authLogic.AuthenticateUser(login);
+            var user = await _authLogic.AuthenticateUser(login);
 
             if (user != null)
             {
