@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 
 namespace Logic.Logic
@@ -45,9 +46,9 @@ namespace Logic.Logic
             return encodeToken;
         }
 
-        public User AuthenticateUser(LoginViewModel login)
+        public async Task<User> AuthenticateUser(LoginViewModel login)
         {
-            var user = _userRepos.GetByEmail(login.Email);
+            var user = await _userRepos.GetByEmail(login.Email);
 
             if (Crypto.VerifyHashedPassword(user.Password, login.Password))
             {
