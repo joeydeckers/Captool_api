@@ -26,9 +26,9 @@ namespace Logic.Repositories
             return await _context.ct_user.FindAsync(id);
         }
 
-        public User Login(LoginViewModel login)
+        public User Login(string email, string password)
         {
-            return _context.ct_user.FirstOrDefault(x => x.Email == login.Email && x.Password == login.Password);
+            return _context.ct_user.FirstOrDefault(x => x.Email == email && x.Password == password);
         }
 
         public async Task<bool> IsEmailAvailable(string email)

@@ -8,8 +8,8 @@ namespace ModelLayer.Models
     public class CaptionFile
     {
         [Key]
-        public string VideoId { get; set; }
-        public string Text { get; set; }
+        public string VideoID { get; set; }
+        public string Data { get; set; }
 
         public CaptionFile()
         {
