@@ -32,15 +32,12 @@ namespace CaptoolApi.Controllers
             _authLogic = authLogic;
         }
 
-        // GET: api/Users/id
-        [HttpGet("{id}")]
+        // GET: api/Users/
+        [Authorize]
+        [HttpGet("[action]")]
         public async Task<ActionResult<User>> GetUser()
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            IList<Claim> claim = identity.Claims.ToList();
-            var email = claim[0].Value;
-            
-            var user = await _userRepos.GetByEmail(email);
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
 
             if (user == null) return NotFound();
 
@@ -52,12 +49,11 @@ namespace CaptoolApi.Controllers
         {
             IActionResult response = Unauthorized();
 
-            var user = await _authLogic.AuthenticateUser(login);
+            var user = await _authLogic.GenerateJWT(login);
 
             if (user != null)
             {
-                var tokenString = _authLogic.GenerateJWT(user);
-                response = Ok(new { token = tokenString });
+                response = Ok(new { token = user.Token });
             }
 
             return response;

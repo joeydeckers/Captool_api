@@ -13,6 +13,7 @@ using System.Web.Helpers;
 using Interfaces;
 using Helper;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Logic.Logic
 {
@@ -29,13 +30,11 @@ namespace Logic.Logic
             _appSettings = appSettings.Value;
         }
 
-        public User GenerateJWT(string email, string password)
+        public async Task<User> GenerateJWT(LoginViewModel login)
         {
-            var user = _userRepos.Login(email, password);
+            var user = await AuthenticateUser(login);
 
-            // return null if user not found
-            if (user == null)
-                return null;
+            if (user == null) return null;
 
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -66,6 +65,14 @@ namespace Logic.Logic
             else user = null;
 
             return user;
+        }
+
+        public async Task<User> GetUserFromToken(ClaimsIdentity identity)
+        {
+            IList<Claim> claim = identity.Claims.ToList();
+            var id = Convert.ToInt32(claim[0].Value);
+
+            return await _userRepos.GetAsync(id);
         }
     }
 }
