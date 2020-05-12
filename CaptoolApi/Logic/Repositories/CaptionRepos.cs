@@ -29,9 +29,12 @@ namespace Logic.Repositories
         public async Task<CaptionFile> getCaptionsAsync(string id)
         {
             CaptionFile caption = await _context.ct_captions.FindAsync(id);
-            var text = caption.Data;
-
-            return new CaptionFile() { VideoID = id, Data = text };
+            if (caption != null)
+            {
+                var text = caption.Data;
+                return new CaptionFile() { VideoID = id, Data = text };
+            }
+            else return null;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Interfaces.CaptionInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Models;
+using ModelLayer.ViewModels;
 
 namespace CaptoolApi.Controllers
 {
@@ -20,15 +21,13 @@ namespace CaptoolApi.Controllers
         }
 
         // GET: api/Captions/id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<string>> GetCaptions(string id)
+        [HttpPost("[action]")]
+        public async Task<ActionResult<string>> GetCaptions([FromBody]CaptionViewModel model)
         {
-            CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-            string text = caption.Data;
-            
+            CaptionFile caption = await _captionsRepos.getCaptionsAsync(model.id);
             if (caption == null) return NotFound();
 
-            return text;
+            return caption.Data;
         }
 
         [HttpPost("[action]")]
