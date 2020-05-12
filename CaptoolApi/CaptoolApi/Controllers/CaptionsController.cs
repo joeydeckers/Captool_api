@@ -33,11 +33,10 @@ namespace CaptoolApi.Controllers
             if (user == null) return Unauthorized();
 
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-            string text = caption.Data;
-
+            
             if (caption == null) return NotFound();
 
-            return text;
+            return caption.Data;
         }
 
         [HttpPost("[action]")]
