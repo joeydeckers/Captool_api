@@ -8,10 +8,12 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 using Interfaces;
 using Helper;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Logic.Logic
 {
@@ -28,13 +30,11 @@ namespace Logic.Logic
             _appSettings = appSettings.Value;
         }
 
-        public User GenerateJWT(string email, string password)
+        public async Task<User> GenerateJWT(LoginViewModel login)
         {
-            var user = _userRepos.Login(email, password);
+            var user = await AuthenticateUser(login);
 
-            // return null if user not found
-            if (user == null)
-                return null;
+            if (user == null) return null;
 
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -54,9 +54,9 @@ namespace Logic.Logic
             return user;
         }
 
-        public User AuthenticateUser(LoginViewModel login)
+        public async Task<User> AuthenticateUser(LoginViewModel login)
         {
-            var user = _userRepos.GetByEmail(login.Email);
+            var user = await _userRepos.GetByEmail(login.Email);
 
             if (Crypto.VerifyHashedPassword(user.Password, login.Password))
             {
@@ -65,6 +65,14 @@ namespace Logic.Logic
             else user = null;
 
             return user;
+        }
+
+        public async Task<User> GetUserFromToken(ClaimsIdentity identity)
+        {
+            IList<Claim> claim = identity.Claims.ToList();
+            var id = Convert.ToInt32(claim[0].Value);
+
+            return await _userRepos.GetAsync(id);
         }
     }
 }

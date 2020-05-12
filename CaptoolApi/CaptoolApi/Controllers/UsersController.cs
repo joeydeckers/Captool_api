@@ -15,7 +15,6 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Logic;
 using Logic.Logic;
 
 namespace CaptoolApi.Controllers
@@ -25,37 +24,39 @@ namespace CaptoolApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepos _userRepos;
-        private IConfiguration _config;
-        private IAuthLogic _Authlogic;
+        private readonly IAuthLogic _authLogic;
 
-        public UsersController(IUserRepos userRepos, IConfiguration config, IAuthLogic authLogic)
+        public UsersController(IUserRepos userRepos, IAuthLogic authLogic)
         {
             _userRepos = userRepos;
-            _config = config;
-            _Authlogic = authLogic;
+            _authLogic = authLogic;
         }
 
-        // GET: api/Users/id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int? id)
+        // GET: api/Users/
+        [Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult<User>> GetUser()
         {
-            var user = await _userRepos.GetAsync(id);
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
 
             if (user == null) return NotFound();
 
             return user;
         }
 
-        // POST: api/Users/Login
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginViewModel loginViewModel)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Login ([FromBody]LoginViewModel login)
         {
-            var user = _Authlogic.GenerateJWT(loginViewModel.Email, loginViewModel.Password);
+            IActionResult response = Unauthorized();
 
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+            var user = await _authLogic.GenerateJWT(login);
 
-            return Ok(user);
+            if (user != null)
+            {
+                response = Ok(new { token = user.Token });
+            }
+
+            return response;
         }
 
         // POST: api/Users/PostUser
@@ -79,21 +80,5 @@ namespace CaptoolApi.Controllers
             await _userRepos.Delete(id);
             return NoContent();
         }
-
-        //private async LoginViewModel AuthenticateUser(LoginViewModel login)
-        //{
-        //    var user = await _userRepos.Login(login.Email, login.Password);
-
-        //    if (user == null) return NotFound();
-
-        //    return user;
-        //    //LoginViewModel user = null;
-        //    ////static info
-        //    //if (login.Email == "test@test.test" && login.Password == "test")
-        //    //{
-        //    //    user = new LoginViewModel { Email = "test@test.test", Password = "test" };
-        //    //}
-        //    //return user;
-        //}
     }
 }

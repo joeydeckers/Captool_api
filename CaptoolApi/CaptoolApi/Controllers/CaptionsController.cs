@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Interfaces.CaptionInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using ModelLayer.Models;
-using ModelLayer.ViewModels;
+using Interfaces.UserInterfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CaptoolApi.Controllers
 {
@@ -14,20 +16,28 @@ namespace CaptoolApi.Controllers
     public class CaptionsController : ControllerBase 
     { 
         private readonly ICaptionRepos _captionsRepos;
+        private readonly IAuthLogic _authLogic;
 
-        public CaptionsController(ICaptionRepos captionrepos)
+        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic)
         {
             _captionsRepos = captionrepos;
+            _authLogic = authLogic;
         }
 
         // GET: api/Captions/id
-        [HttpPost("[action]")]
-        public async Task<ActionResult<string>> GetCaptions([FromBody]CaptionViewModel model)
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> GetCaptions(string id)
         {
-            CaptionFile caption = await _captionsRepos.getCaptionsAsync(model.id);
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
+            if (user == null) return Unauthorized();
+
+            CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
+            string text = caption.Data;
+
             if (caption == null) return NotFound();
 
-            return caption.Data;
+            return text;
         }
 
         [HttpPost("[action]")]
