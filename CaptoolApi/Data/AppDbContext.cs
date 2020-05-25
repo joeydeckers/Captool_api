@@ -10,7 +10,7 @@ namespace Data
     {
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        { 
+        {
         }
 
         public DbSet<User> ct_user { get; set; }

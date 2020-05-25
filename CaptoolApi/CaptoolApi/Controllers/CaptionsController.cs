@@ -9,6 +9,13 @@ using ModelLayer.Models;
 using Interfaces.UserInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Net;
+using Helper;
+using Microsoft.Extensions.Options;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
+using System.Text;
 
 namespace CaptoolApi.Controllers
 {
@@ -17,26 +24,41 @@ namespace CaptoolApi.Controllers
     { 
         private readonly ICaptionRepos _captionsRepos;
         private readonly IAuthLogic _authLogic;
+        private readonly IWebHostEnvironment _webRoot;
 
-        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic)
+        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic, IWebHostEnvironment webroot)
         {
             _captionsRepos = captionrepos;
             _authLogic = authLogic;
+            _webRoot = webroot;
         }
 
         // GET: api/Captions/id
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<string>> GetCaptions(string id)
+        public async Task<ActionResult> GetCaptions(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();
 
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-            
-            if (caption == null) return NotFound();
 
-            return caption.Data;
+            var contentType = "text/plain";
+            var fileName = $"/captions.txt";
+
+            if (System.IO.File.Exists(fileName))
+            {
+                System.IO.File.Delete(fileName);
+            }
+
+            using (FileStream fs = System.IO.File.Create(fileName))
+            {
+                // Add some text to file    
+                Byte[] data =  new UTF8Encoding(true).GetBytes(caption.Data);
+                fs.Write(data, 0, caption.Data.Length);
+            }
+
+            return File(fileName, contentType, $"{caption.VideoID}.srt");
         }
 
         [HttpPost("[action]")]

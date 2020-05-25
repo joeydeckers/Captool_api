@@ -55,7 +55,9 @@ namespace CaptoolApi
             services.Configure<AppSettings>(appSettingsSection);
 
             // Add other services here:
+            
             var appSettings = appSettingsSection.Get<AppSettings>();
+            appSettings.Url = appSettingsSection["Url"];
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
             {
