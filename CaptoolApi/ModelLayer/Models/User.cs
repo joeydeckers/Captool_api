@@ -11,8 +11,6 @@ namespace ModelLayer.Models
         public int? Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-
-        [JsonIgnore]
         public string Password { get; set; }
         public string Playlist { get; set; }
         [NotMapped]
