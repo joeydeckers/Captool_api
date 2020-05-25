@@ -12,10 +12,11 @@ namespace ModelLayer.Models
         public string Name { get; set; }
         public string Email { get; set; }
 
-        [JsonIgnore]
         public string Password { get; set; }
+        [JsonIgnore]
         public string Playlist { get; set; }
         [NotMapped]
+        [JsonIgnore]
         public string Token { get; set; }
     }
 }
