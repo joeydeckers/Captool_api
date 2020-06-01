@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Logic.Logic;
+using System.Web.Helpers;
 
 namespace CaptoolApi.Controllers
 {
@@ -64,6 +65,25 @@ namespace CaptoolApi.Controllers
         public async Task<ActionResult<User>> PostUser([FromBody] User user)
         {
             return await _userRepos.Add(user);
+        }
+
+        [Authorize]
+        [HttpPut("[action]")]
+        public async Task<ActionResult<User>> UpdateUser([FromBody] User userChanges)
+        {
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
+
+            var newUser = new User()
+            {
+                Id = user.Id,
+                Name = userChanges.Name,
+                Email = userChanges.Email,
+                Playlist = userChanges.Playlist,
+                Password = Crypto.HashPassword(userChanges.Password)
+            };
+
+            await _userRepos.UpdateAsync(newUser);
+            return Ok();
         }
 
         // GET: api/Users/email
