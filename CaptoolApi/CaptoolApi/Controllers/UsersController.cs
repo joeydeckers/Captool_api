@@ -89,7 +89,7 @@ namespace CaptoolApi.Controllers
             };
 
             await _userRepos.UpdateAsync(newUser);
-            return Ok();
+            return NoContent();
         }
 
         // GET: api/Users/email
