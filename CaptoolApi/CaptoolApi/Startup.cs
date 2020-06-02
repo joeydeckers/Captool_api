@@ -11,7 +11,6 @@ using Interfaces.UserInterfaces;
 using Logic.Logic;
 using Logic.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,8 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-using Swashbuckle.AspNetCore.SwaggerUI;
+
 
 namespace CaptoolApi
 {
@@ -115,7 +113,6 @@ namespace CaptoolApi
             services.AddScoped<IUserRepos, UserRepos>();
             services.AddScoped<ICaptionRepos, CaptionRepos>();
             services.AddScoped<IAuthLogic, AuthLogic>();
-            services.AddMvc();
 
         }
 
@@ -124,10 +121,6 @@ namespace CaptoolApi
         {
 
             app.UseSwagger();
-
-            app.UseCors(
-                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
-            );
 
             app.UseSwaggerUI(c =>
             {
@@ -149,7 +142,9 @@ namespace CaptoolApi
             app.UseRouting();
 
             app.UseCors(MyAllowOrigins);
+
             app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

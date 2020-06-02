@@ -14,8 +14,6 @@ using System.Net;
 using Helper;
 using Microsoft.Extensions.Options;
 using System.IO;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Hosting;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 
@@ -26,13 +24,11 @@ namespace CaptoolApi.Controllers
     { 
         private readonly ICaptionRepos _captionsRepos;
         private readonly IAuthLogic _authLogic;
-        private readonly IWebHostEnvironment _webRoot;
 
-        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic, IWebHostEnvironment webroot)
+        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic)
         {
             _captionsRepos = captionrepos;
             _authLogic = authLogic;
-            _webRoot = webroot;
         }
 
         // GET: api/Captions/id
