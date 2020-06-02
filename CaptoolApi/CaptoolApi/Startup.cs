@@ -122,6 +122,10 @@ namespace CaptoolApi
 
             app.UseSwagger();
 
+            app.UseCors(
+                options => options.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+            );
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
@@ -140,8 +144,6 @@ namespace CaptoolApi
             app.UseDeveloperExceptionPage();
 
             app.UseRouting();
-
-            app.UseCors(MyAllowOrigins);
 
             app.UseAuthentication();
 
