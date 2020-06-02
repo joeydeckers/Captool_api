@@ -36,6 +36,8 @@ namespace CaptoolApi.Controllers
         // GET: api/Users/
         [Authorize]
         [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<User>> GetUser()
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
@@ -46,6 +48,8 @@ namespace CaptoolApi.Controllers
         }
 
         [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Login ([FromBody]LoginViewModel login)
         {
             IActionResult response = Unauthorized();
@@ -69,6 +73,8 @@ namespace CaptoolApi.Controllers
 
         [Authorize]
         [HttpPut("[action]")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<User>> UpdateUser([FromBody] User userChanges)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);

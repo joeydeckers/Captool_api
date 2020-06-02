@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Interfaces.CaptionInterfaces;
@@ -16,6 +17,7 @@ using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace CaptoolApi.Controllers
 {
@@ -36,6 +38,8 @@ namespace CaptoolApi.Controllers
         // GET: api/Captions/id
         [Authorize]
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetCaptions(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
@@ -43,8 +47,10 @@ namespace CaptoolApi.Controllers
 
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
 
-            var contentType = "text/plain";
-            var fileName = $"/captions.txt";
+            var contentType = "text/vtt";
+            var fileName = Path.Combine(Directory.GetCurrentDirectory(),
+                            "wwwroot", "StaticFiles", "captions.vtt");
+
 
             if (System.IO.File.Exists(fileName))
             {
@@ -58,7 +64,7 @@ namespace CaptoolApi.Controllers
                 fs.Write(data, 0, caption.Data.Length);
             }
 
-            return File(fileName, contentType, $"{caption.VideoID}.vtt");
+            return PhysicalFile(fileName, contentType, $"{caption.VideoID}.vtt");
         }
 
         [HttpPost("[action]")]
