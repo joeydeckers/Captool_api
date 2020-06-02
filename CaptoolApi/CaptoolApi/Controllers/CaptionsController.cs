@@ -58,7 +58,7 @@ namespace CaptoolApi.Controllers
                 fs.Write(data, 0, caption.Data.Length);
             }
 
-            return File(fileName, contentType, $"{caption.VideoID}.srt");
+            return File(fileName, contentType, $"{caption.VideoID}.vtt");
         }
 
         [HttpPost("[action]")]
