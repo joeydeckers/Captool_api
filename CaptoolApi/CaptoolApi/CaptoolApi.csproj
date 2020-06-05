@@ -30,7 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\StaticFiles\captions.vtt" />
+    <Folder Include="MyStaticFiles\" />
+    <Folder Include="wwwroot\StaticFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\StaticFiles\9CjpPHNO.vtt" />
   </ItemGroup>
 
 </Project>

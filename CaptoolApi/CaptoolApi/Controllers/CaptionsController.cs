@@ -36,13 +36,13 @@ namespace CaptoolApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> GetCaptions(string id)
+        public async Task<ActionResult<string>> GetCaptions(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();
 
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-
+            
             var contentType = "text/vtt";
             var fileName = Path.Combine(Directory.GetCurrentDirectory(),
                             "wwwroot", "StaticFiles", "captions.vtt");
@@ -60,7 +60,7 @@ namespace CaptoolApi.Controllers
                 fs.Write(data, 0, caption.Data.Length);
             }
 
-            return PhysicalFile(fileName, contentType, $"{caption.VideoID}.vtt");
+            return caption.Data;
         }
 
         [HttpPost("[action]")]
