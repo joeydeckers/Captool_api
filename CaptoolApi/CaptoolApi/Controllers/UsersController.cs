@@ -37,6 +37,7 @@ namespace CaptoolApi.Controllers
         [Authorize]
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<User>> GetUser()
         {

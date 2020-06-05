@@ -35,6 +35,7 @@ namespace CaptoolApi.Controllers
         [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<string>> GetCaptions(string id)
         {
@@ -42,8 +43,10 @@ namespace CaptoolApi.Controllers
             if (user == null) return Unauthorized();
 
             CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
-            
-            var contentType = "text/vtt";
+
+            if (caption == null)
+                return NotFound();
+
             var fileName = Path.Combine(Directory.GetCurrentDirectory(),
                             "wwwroot", "StaticFiles", $"{caption.VideoID}.vtt");
 
