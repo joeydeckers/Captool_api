@@ -45,7 +45,7 @@ namespace CaptoolApi.Controllers
             
             var contentType = "text/vtt";
             var fileName = Path.Combine(Directory.GetCurrentDirectory(),
-                            "wwwroot", "StaticFiles", "captions.vtt");
+                            "wwwroot", "StaticFiles", $"{caption.VideoID}.vtt");
 
 
             if (System.IO.File.Exists(fileName))
