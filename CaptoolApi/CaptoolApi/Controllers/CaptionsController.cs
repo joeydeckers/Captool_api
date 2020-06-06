@@ -47,18 +47,18 @@ namespace CaptoolApi.Controllers
             if (caption == null)
                 return NotFound();
 
-            var fileName = Path.Combine(Directory.GetCurrentDirectory(),
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(),
                             "wwwroot", "StaticFiles", $"{caption.VideoID}.vtt");
 
 
-            if (System.IO.File.Exists(fileName))
+            if (System.IO.File.Exists(filePath))
             {
-                System.IO.File.Delete(fileName);
+                System.IO.File.Delete(filePath);
             }
 
             string text = $"WEBVTT - This file has cues.\n\n{caption.Data}";
 
-            using (FileStream fs = System.IO.File.Create(fileName))
+            using (FileStream fs = System.IO.File.Create(filePath))
             {
                 // Add some text to file    
                 Byte[] data =  new UTF8Encoding(true).GetBytes(text);
