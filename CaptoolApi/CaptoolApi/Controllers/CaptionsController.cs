@@ -56,11 +56,13 @@ namespace CaptoolApi.Controllers
                 System.IO.File.Delete(fileName);
             }
 
+            string text = $"WEBVTT - This file has cues.\n\n{caption.Data}";
+
             using (FileStream fs = System.IO.File.Create(fileName))
             {
                 // Add some text to file    
-                Byte[] data =  new UTF8Encoding(true).GetBytes(caption.Data);
-                fs.Write(data, 0, caption.Data.Length);
+                Byte[] data =  new UTF8Encoding(true).GetBytes(text);
+                fs.Write(data, 0, text.Length);
             }
 
             return caption.Data;
