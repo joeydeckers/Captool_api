@@ -38,15 +38,16 @@ namespace Logic.Repositories
             }
         }
 
-        public async Task<List<CaptionFile>> getCaptionsAsync(string videoid)
+        public async Task<CaptionFile> getCaptionsAsync(string videoid)
         {
-            
-            List<CaptionFile> captions = _context.ct_captions
-                .Where(v => v.VideoID == videoid).ToList();
 
-            if (captions != null)
+            CaptionFile caption = _context.ct_captions
+                .ToList()
+                .Last(v => v.VideoID == videoid);
+
+            if (caption != null)
             {
-                return captions;
+                return caption;
             }
             else return null;
         }

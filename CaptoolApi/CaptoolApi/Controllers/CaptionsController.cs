@@ -37,14 +37,14 @@ namespace CaptoolApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<CaptionFile>>> GetCaptions(string id)
+        public async Task<ActionResult<CaptionFile>> GetCaptions(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();
 
-            List<CaptionFile> captions = await _captionsRepos.getCaptionsAsync(id);
+            CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
 
-            if (captions == null)
+            if (caption == null)
                 return NotFound();
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(),
@@ -56,14 +56,7 @@ namespace CaptoolApi.Controllers
                 System.IO.File.Delete(filePath);
             }
 
-            string captiondata = "";
-
-            foreach (var caption in captions)
-            {
-                captiondata += caption.Caption;
-            }
-
-            string text = $"WEBVTT - This file has cues.\n\n{captiondata}";
+            string text = $"WEBVTT - This file has cues.\n\n{caption.Caption}";
 
             using (FileStream fs = System.IO.File.Create(filePath))
             {
@@ -72,7 +65,7 @@ namespace CaptoolApi.Controllers
                 fs.Write(data, 0, text.Length);
             }
 
-            return captions;
+            return caption;
         }
         [Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

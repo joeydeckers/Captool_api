@@ -8,7 +8,7 @@ namespace Interfaces.CaptionInterfaces
 {
     public interface ICaptionRepos
     {
-        Task<List<CaptionFile>> getCaptionsAsync(string id);
+        Task<CaptionFile> getCaptionsAsync(string id);
         Task<CaptionFile> addCaptionAsync(CaptionFile captions);
         Task<CaptionFile> updateCaption(CaptionFile captions);
         Task deleteCaption(int id);
