@@ -37,18 +37,18 @@ namespace CaptoolApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> GetCaptions(string id)
+        public async Task<ActionResult<List<CaptionFile>>> GetCaptions(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();
 
-            CaptionFile caption = await _captionsRepos.getCaptionsAsync(id);
+            List<CaptionFile> captions = await _captionsRepos.getCaptionsAsync(id);
 
-            if (caption == null)
+            if (captions == null)
                 return NotFound();
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(),
-                            "wwwroot", "StaticFiles", $"{caption.VideoID}.vtt");
+                            "wwwroot", "StaticFiles", $"{id}.vtt");
 
 
             if (System.IO.File.Exists(filePath))
@@ -56,7 +56,14 @@ namespace CaptoolApi.Controllers
                 System.IO.File.Delete(filePath);
             }
 
-            string text = $"WEBVTT - This file has cues.\n\n{caption.Data}";
+            string captiondata = "";
+
+            foreach (var caption in captions)
+            {
+                captiondata += caption.Caption;
+            }
+
+            string text = $"WEBVTT - This file has cues.\n\n{captiondata}";
 
             using (FileStream fs = System.IO.File.Create(filePath))
             {
@@ -65,13 +72,49 @@ namespace CaptoolApi.Controllers
                 fs.Write(data, 0, text.Length);
             }
 
-            return caption.Data;
+            return captions;
         }
-
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("[action]")]
         public async Task<ActionResult<CaptionFile>> PostCaption([FromBody]CaptionFile caption)
-        { 
+        {
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
+            if (user == null) return Unauthorized();
+
             return await _captionsRepos.addCaptionAsync(caption);
+        }
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPut("[action]")]
+        public async Task<ActionResult<CaptionFile>> UpdateCaption([FromBody]CaptionFile caption)
+        {
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
+            if (user == null) return Unauthorized();
+
+            await _captionsRepos.updateCaption(caption);
+
+            return Redirect($"{Request.Host}/StaticFiles/{caption.VideoID}.vtt");
+        }
+
+
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<User>> DeleteUser(int id)
+        {
+            var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
+            if (user == null) return Unauthorized();
+
+            await _captionsRepos.deleteCaption(id);
+            return NoContent();
         }
     }
 }

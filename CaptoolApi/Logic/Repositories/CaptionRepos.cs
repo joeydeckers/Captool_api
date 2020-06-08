@@ -1,9 +1,11 @@
 ﻿using Data;
 using Interfaces.CaptionInterfaces;
+using Microsoft.EntityFrameworkCore;
 using ModelLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,15 +28,45 @@ namespace Logic.Repositories
             return captions;
         }
 
-        public async Task<CaptionFile> getCaptionsAsync(string id)
+        public async Task deleteCaption(int id)
         {
-            CaptionFile caption = await _context.ct_captions.FindAsync(id);
+            var caption = await _context.ct_captions.FindAsync(id);
             if (caption != null)
             {
-                var text = caption.Data;
-                return new CaptionFile() { VideoID = id, Data = text };
+                _context.ct_captions.Remove(caption);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<CaptionFile>> getCaptionsAsync(string videoid)
+        {
+            
+            List<CaptionFile> captions = _context.ct_captions
+                .Where(v => v.VideoID == videoid).ToList();
+
+            if (captions != null)
+            {
+                return captions;
             }
             else return null;
+        }
+
+        public async Task<CaptionFile> updateCaption(CaptionFile newcaption)
+        {
+            var caption = _context.Set<CaptionFile>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(newcaption.Id));
+
+            if (caption != null)
+            {
+                _context.Entry(caption).State = EntityState.Detached;
+            }
+
+            _context.Entry(newcaption).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return newcaption;
         }
     }
 }
