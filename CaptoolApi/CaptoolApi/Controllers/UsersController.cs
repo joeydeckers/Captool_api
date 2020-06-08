@@ -26,11 +26,13 @@ namespace CaptoolApi.Controllers
     {
         private readonly IUserRepos _userRepos;
         private readonly IAuthLogic _authLogic;
+        private readonly IUserLogic _userLogic;
 
-        public UsersController(IUserRepos userRepos, IAuthLogic authLogic)
+        public UsersController(IUserRepos userRepos, IAuthLogic authLogic, IUserLogic userLogic)
         {
             _userRepos = userRepos;
             _authLogic = authLogic;
+            _userLogic = userLogic;
         }
 
         // GET: api/Users/
@@ -80,16 +82,8 @@ namespace CaptoolApi.Controllers
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
 
-            var newUser = new User()
-            {
-                Id = user.Id,
-                Name = userChanges.Name,
-                Email = userChanges.Email,
-                Playlist = userChanges.Playlist,
-                Password = Crypto.HashPassword(userChanges.Password)
-            };
+            await _userLogic.UpdateUser(user, userChanges);
 
-            await _userRepos.UpdateAsync(newUser);
             return NoContent();
         }
 

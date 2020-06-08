@@ -116,6 +116,7 @@ namespace CaptoolApi
             services.AddScoped<IUserRepos, UserRepos>();
             services.AddScoped<ICaptionRepos, CaptionRepos>();
             services.AddScoped<IAuthLogic, AuthLogic>();
+            services.AddScoped<IUserLogic, UserLogic>();
             services.AddDirectoryBrowser();
         }
 
