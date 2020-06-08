@@ -28,14 +28,15 @@ namespace Logic.Repositories
             return captions;
         }
 
-        public async Task deleteCaption(int id)
+        public async Task deleteCaption(string id)
         {
-            var caption = await _context.ct_captions.FindAsync(id);
-            if (caption != null)
-            {
+            List<CaptionFile> captions = _context.ct_captions
+                                                          .Where(c => c.VideoID == id)
+                                                          .ToList();
+            foreach(var caption in captions)
                 _context.ct_captions.Remove(caption);
                 await _context.SaveChangesAsync();
-            }
+            
         }
 
         public async Task<CaptionFile> getCaptionsAsync(string videoid)

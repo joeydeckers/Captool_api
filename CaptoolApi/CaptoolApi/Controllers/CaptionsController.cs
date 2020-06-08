@@ -101,7 +101,7 @@ namespace CaptoolApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
+        public async Task<ActionResult<User>> DeleteCaption(string id)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();

@@ -11,7 +11,7 @@ namespace Interfaces.CaptionInterfaces
         Task<CaptionFile> getCaptionsAsync(string id);
         Task<CaptionFile> addCaptionAsync(CaptionFile captions);
         Task<CaptionFile> updateCaption(CaptionFile captions);
-        Task deleteCaption(int id);
+        Task deleteCaption(string id);
 
     }
 }
