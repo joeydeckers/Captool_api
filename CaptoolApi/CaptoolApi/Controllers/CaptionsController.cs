@@ -24,11 +24,13 @@ namespace CaptoolApi.Controllers
     { 
         private readonly ICaptionRepos _captionsRepos;
         private readonly IAuthLogic _authLogic;
+        private readonly ICaptionLogic _captionLogic;
 
-        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic)
+        public CaptionsController(ICaptionRepos captionrepos, IAuthLogic authLogic, ICaptionLogic captionLogic)
         {
             _captionsRepos = captionrepos;
             _authLogic = authLogic;
+            _captionLogic = captionLogic;
         }
 
         // GET: api/Captions/id
@@ -50,20 +52,8 @@ namespace CaptoolApi.Controllers
             var filePath = Path.Combine(Directory.GetCurrentDirectory(),
                             "wwwroot", "StaticFiles", $"{id}.vtt");
 
+            _captionLogic.createStaticFile(id, filePath, caption);
 
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            string text = $"WEBVTT - This file has cues.\n\n{caption.Caption}";
-
-            using (FileStream fs = System.IO.File.Create(filePath))
-            {
-                // Add some text to file    
-                Byte[] data =  new UTF8Encoding(true).GetBytes(text);
-                fs.Write(data, 0, text.Length);
-            }
 
             return caption;
         }
