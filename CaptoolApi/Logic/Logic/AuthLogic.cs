@@ -58,6 +58,10 @@ namespace Logic.Logic
         {
             var user = await _userRepos.GetByEmail(login.Email);
 
+            if (user == null)
+            {
+                return null;
+            }
             if (Crypto.VerifyHashedPassword(user.Password, login.Password))
             {
                 return user;
