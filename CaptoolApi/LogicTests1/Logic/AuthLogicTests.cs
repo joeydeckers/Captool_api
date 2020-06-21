@@ -10,14 +10,17 @@ using ModelLayer.Models;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using Logic.Repositories;
+using Helper;
+using Microsoft.Extensions.Options;
+using Interfaces.UserInterfaces;
 
 namespace Logic.Logic.Tests
 {
     [TestClass()]
     public class AuthLogicTests
     {
-        //IConfiguration configuration = new ConfigurationBuilder();
-        UserRepos userrepos; 
+        IOptions<AppSettings> appsettings;
+        IUserRepos userrepos; 
 
 
         [TestMethod()]
@@ -35,11 +38,9 @@ namespace Logic.Logic.Tests
 
             using (var context = new AppDbContext(options))
             {
-                /*
-                Configuration config
                 userrepos = new UserRepos(context);
-                AuthLogic authlogic = new AuthLogic()
-                */
+                AuthLogic authlogic = new AuthLogic(userrepos, appsettings);
+                
             }
         }
 
