@@ -69,9 +69,20 @@ namespace CaptoolApi.Controllers
 
         // POST: api/Users/PostUser
         [HttpPost("[action]")]
-        public async Task<ActionResult<User>> PostUser([FromBody] User user)
+        public async Task<IActionResult> PostUser([FromBody] User user)
         {
-            return await _userRepos.Add(user);
+            IActionResult response = Unauthorized();
+
+            await _userRepos.Add(user);
+
+            await _authLogic.GenerateJWT(new LoginViewModel() { Email = user.Email, Password = user.Password });
+
+            if (user != null)
+            {
+                response = Ok(new { token = user.Token });
+            }
+
+            return response;
         }
 
         [Authorize]
@@ -81,8 +92,7 @@ namespace CaptoolApi.Controllers
         public async Task<ActionResult<User>> UpdateUser([FromBody] User userChanges)
         {
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
-            if (user == null)
-                return Unauthorized();
+            if (user == null) return Unauthorized();
 
             await _userLogic.UpdateUser(user, userChanges);
 
