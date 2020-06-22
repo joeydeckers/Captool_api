@@ -19,14 +19,22 @@ namespace Logic.Logic
 {
     public class AuthLogic : IAuthLogic
     {
+        private readonly IConfiguration _config;
         private readonly IUserRepos _userRepos;
         private readonly AppSettings _appSettings;
 
+        public AuthLogic(IConfiguration config,IUserRepos userRepos, IOptions<AppSettings> appSettings)
+        {
+            _config = config;
+            _userRepos = userRepos;
+            _appSettings = appSettings.Value;
+        }
         public AuthLogic(IUserRepos userRepos, IOptions<AppSettings> appSettings)
         {
             _userRepos = userRepos;
             _appSettings = appSettings.Value;
         }
+
 
         public async Task<User> GenerateJWT(LoginViewModel login)
         {
