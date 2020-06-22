@@ -52,7 +52,7 @@ namespace CaptoolApi.Controllers
             var filePath = Path.Combine(Directory.GetCurrentDirectory(),
                             "wwwroot", "StaticFiles", $"{id}.vtt");
 
-            caption.Caption = _captionLogic.createStaticFile(id, filePath, caption);
+            _captionLogic.createStaticFile(id, filePath, caption);
 
 
             return caption;

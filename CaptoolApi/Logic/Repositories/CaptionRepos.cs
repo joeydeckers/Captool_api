@@ -41,15 +41,19 @@ namespace Logic.Repositories
 
         public async Task<CaptionFile> getCaptionsAsync(string videoid)
         {
+            CaptionFile caption = null;
+            List<CaptionFile> captions = await _context.ct_captions.ToListAsync();
 
-            CaptionFile caption = _context.ct_captions
-                .ToList()
-                .Last(v => v.VideoID == videoid);
+            if (captions != null)
+            {
+                caption = captions.Last(v => v.VideoID == videoid);
+            }
 
             if (caption != null)
             {
                 return caption;
             }
+
             else return null;
         }
 

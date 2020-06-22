@@ -7,6 +7,6 @@ namespace Interfaces.CaptionInterfaces
 {
     public interface ICaptionLogic
     {
-        string createStaticFile(string id, string filePath, CaptionFile caption);
+        void createStaticFile(string id, string filePath, CaptionFile caption);
     }
 }
