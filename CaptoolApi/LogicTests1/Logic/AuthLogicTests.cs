@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Interfaces.UserInterfaces;
 using ModelLayer.ViewModels;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 
 namespace Logic.Logic.Tests
 {
@@ -22,7 +23,7 @@ namespace Logic.Logic.Tests
     public class AuthLogicTests
     {
         IOptions<AppSettings> appsettings;
-        IUserRepos userrepos; 
+        IUserRepos userrepos;
 
 
         [TestMethod()]
@@ -48,6 +49,8 @@ namespace Logic.Logic.Tests
                 appsettings = Options.Create(inputappsetings);
                 AuthLogic authlogic = new AuthLogic(userrepos, appsettings);
                 LoginViewModel loginView = new LoginViewModel();
+                loginView.Email = "trash";
+                loginView.Password = Crypto.HashPassword("trash");
                 User user;
 
                 user = await authlogic.GenerateJWT(loginView);
@@ -56,7 +59,8 @@ namespace Logic.Logic.Tests
             }
         }
 
-        public void GenerateJWTTest_ReturnUser()
+        [TestMethod()]
+        public async Task GenerateJWTTest_ReturnUser()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: "UserDatabase")
