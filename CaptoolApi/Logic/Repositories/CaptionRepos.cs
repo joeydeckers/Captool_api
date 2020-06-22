@@ -59,6 +59,7 @@ namespace Logic.Repositories
                 .Local
                 .FirstOrDefault(entry => entry.Id.Equals(newcaption.Id));
 
+
             if (caption != null)
             {
                 _context.Entry(caption).State = EntityState.Detached;
