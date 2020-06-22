@@ -9,7 +9,7 @@ namespace Logic.Logic
 {
     public class CaptionLogic : ICaptionLogic
     {
-        public void createStaticFile(string id, string filePath, CaptionFile caption)
+        public string createStaticFile(string id, string filePath, CaptionFile caption)
         {
             if (System.IO.File.Exists(filePath))
             {
@@ -24,6 +24,8 @@ namespace Logic.Logic
                 Byte[] data = new UTF8Encoding(true).GetBytes(text);
                 fs.Write(data, 0, text.Length);
             }
+
+            return text;
         }
     }
 }
