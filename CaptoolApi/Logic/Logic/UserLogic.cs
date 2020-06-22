@@ -27,6 +27,7 @@ namespace Logic.Logic
                 oldUser.Password = Crypto.HashPassword(newUser.Password);
             }
 
+
             await _userRepos.UpdateAsync(oldUser);
         }
     }

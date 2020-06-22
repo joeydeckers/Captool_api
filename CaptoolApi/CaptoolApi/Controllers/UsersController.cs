@@ -71,18 +71,11 @@ namespace CaptoolApi.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> PostUser([FromBody] User user)
         {
-            IActionResult response = Unauthorized();
+            string nothashed = await _userRepos.Add(user);
 
-            await _userRepos.Add(user);
+            var newuser = await _authLogic.GenerateJWT(new LoginViewModel() { Email = user.Email, Password = nothashed });
 
-            await _authLogic.GenerateJWT(new LoginViewModel() { Email = user.Email, Password = user.Password });
-
-            if (user != null)
-            {
-                response = Ok(new { token = user.Token });
-            }
-
-            return response;
+            return Ok(new { token = newuser.Token });
         }
 
         [Authorize]

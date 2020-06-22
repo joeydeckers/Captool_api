@@ -26,10 +26,6 @@ namespace Logic.Repositories
             return await _context.ct_user.FindAsync(id);
         }
 
-        public User Login(LoginViewModel login)
-        {
-            return _context.ct_user.FirstOrDefault(x => x.Email == login.Email && x.Password == login.Password);
-        }
 
         public async Task<bool> IsEmailAvailable(string email)
         {
@@ -40,12 +36,18 @@ namespace Logic.Repositories
             return false;
         }
 
-        public async Task<User> Add(User user)
+        public async Task<string> Add(User user)
         {
-            user.Password = Crypto.HashPassword(user.Password);
-            await _context.ct_user.AddAsync(user);
+            string nothashed = user.Password;
+
+
+            var newuser = user;
+            newuser.Password = user.Password;
+            newuser.Password = Crypto.HashPassword(newuser.Password);
+            await _context.ct_user.AddAsync(newuser);
             await SaveAsync();
-            return user;
+
+            return nothashed;
         }
 
         public async Task Delete(int? id)
