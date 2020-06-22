@@ -60,16 +60,26 @@ namespace Logic.Repositories
 
         public async Task UpdateAsync(User userChanges)
         {
+
             var user = _context.Set<User>()
                 .Local
                 .FirstOrDefault(entry => entry.Id.Equals(userChanges.Id));
 
+            User newuser = new User()
+            {
+                Id = user.Id,
+                Name = userChanges.Name,
+                Email = userChanges.Email,
+                Password = userChanges.Password,
+                Playlist = userChanges.Playlist
+            };
+
             if (user != null)
             {
                 _context.Entry(user).State = EntityState.Detached;
+                var updated = _context.ct_user.Attach(newuser);
+                _context.Entry(newuser).State = EntityState.Modified;
             }
-
-            _context.Entry(userChanges).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
         }
