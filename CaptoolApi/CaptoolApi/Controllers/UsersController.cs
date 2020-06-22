@@ -91,6 +91,7 @@ namespace CaptoolApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<User>> UpdateUser([FromBody] User userChanges)
         {
+
             var user = await _authLogic.GetUserFromToken(HttpContext.User.Identity as ClaimsIdentity);
             if (user == null) return Unauthorized();
 
@@ -102,13 +103,7 @@ namespace CaptoolApi.Controllers
                 Password = userChanges.Password
             };
 
-            var newuser = await _authLogic.GenerateJWT(newData);
-            if (newuser == null)
-            {
-                Unauthorized();
-            }
-
-            return Ok(new { token = newuser.Token });
+            return RedirectToAction("Login", newData);
         }
 
         // GET: api/Users/email

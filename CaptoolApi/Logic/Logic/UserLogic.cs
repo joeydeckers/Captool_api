@@ -22,9 +22,10 @@ namespace Logic.Logic
             oldUser.Name = newUser.Name;
             oldUser.Email = newUser.Email;
             oldUser.Playlist = newUser.Playlist;
-            oldUser.Password = Crypto.HashPassword(newUser.Password);
-
-
+            if (Crypto.VerifyHashedPassword(oldUser.Password, newUser.Password))
+            {
+                oldUser.Password = Crypto.HashPassword(newUser.Password);
+            }
 
             await _userRepos.UpdateAsync(oldUser);
         }

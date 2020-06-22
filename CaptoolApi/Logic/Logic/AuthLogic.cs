@@ -62,10 +62,12 @@ namespace Logic.Logic
             {
                 return null;
             }
+
             if (Crypto.VerifyHashedPassword(user.Password, login.Password))
             {
                 return user;
             }
+
             else user = null;
 
             return user;
