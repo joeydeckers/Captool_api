@@ -16,6 +16,7 @@ using Interfaces.UserInterfaces;
 using ModelLayer.ViewModels;
 using System.Threading.Tasks;
 using System.Web.Helpers;
+using System.Runtime.CompilerServices;
 
 namespace Logic.Logic.Tests
 {
@@ -24,6 +25,7 @@ namespace Logic.Logic.Tests
     {
         IOptions<AppSettings> appsettings;
         IUserRepos userrepos;
+        string password = Crypto.HashPassword("Password");
 
 
         [TestMethod()]
@@ -44,7 +46,6 @@ namespace Logic.Logic.Tests
                 userrepos = new UserRepos(context);
                 AppSettings inputappsetings = new AppSettings();
                 inputappsetings.Secret = "thisisasecret";
-                inputappsetings.Url = "url";
 
                 appsettings = Options.Create(inputappsetings);
                 AuthLogic authlogic = new AuthLogic(userrepos, appsettings);
@@ -55,10 +56,11 @@ namespace Logic.Logic.Tests
 
                 user = await authlogic.GenerateJWT(loginView);
 
-                Assert.IsNull(user.Email);
+                Assert.IsNull(user);
             }
         }
 
+        //Gooit een faal omdat, de tokendescripter niet goed ingeladen word in een unit test
         [TestMethod()]
         public async Task GenerateJWTTest_ReturnUser()
         {
@@ -68,7 +70,7 @@ namespace Logic.Logic.Tests
 
             using (var context = new AppDbContext(options))
             {
-                context.ct_user.Add(new User { Id = 1, Email = "Jeremeymain@gmail.com", Name = "jeremey", Password = "Password" });
+                context.ct_user.Add(new User { Id = 1, Email = "Jeremeymain@gmail.com", Name = "jeremey", Password = password });
                 context.SaveChanges();
             }
 
@@ -77,53 +79,17 @@ namespace Logic.Logic.Tests
                 userrepos = new UserRepos(context);
                 AppSettings inputappsetings = new AppSettings();
                 inputappsetings.Secret = "thisisasecret";
-                inputappsetings.Url = "url";
 
                 appsettings = Options.Create(inputappsetings);
                 AuthLogic authlogic = new AuthLogic(userrepos, appsettings);
-                LoginViewModel loginView = new LoginViewModel();
+                LoginViewModel user2 = new LoginViewModel();
+                user2.Email = "Jeremeymain@gmail.com";
+                user2.Password = "Password";
                 User user;
 
-                user = await authlogic.GenerateJWT(loginView);
+                user = await authlogic.GenerateJWT(user2);
 
-                Assert.IsNull(user.Email);
-            }
-        }
-
-        [TestMethod()]
-        public void AuthenticateUserTest_returnUser()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "UserDatabase")
-                .Options;
-
-            using (var context = new AppDbContext(options))
-            {
-                context.ct_user.Add(new User { Id = 1, Email = "Jeremeymain@gmail.com", Name = "jeremey", Password = "Password" });
-                context.SaveChanges();
-            }
-
-            using (var context = new AppDbContext(options))
-            {
-
-            }
-        }
-
-        public void AuthenticateUserTest_returnNull()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "UserDatabase")
-                .Options;
-
-            using (var context = new AppDbContext(options))
-            {
-                context.ct_user.Add(new User { Id = 1, Email = "Jeremeymain@gmail.com", Name = "jeremey", Password = "Password" });
-                context.SaveChanges();
-            }
-
-            using (var context = new AppDbContext(options))
-            {
-
+                Assert.AreEqual(user.Email, user2.Email);
             }
         }
     }

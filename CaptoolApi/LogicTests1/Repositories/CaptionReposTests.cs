@@ -22,7 +22,7 @@ namespace Logic.Repositories.Tests
 
             using (var context = new AppDbContext(options))
             {
-                context.ct_captions.Add(new CaptionFile { VideoID = "1", Data = "String" });
+                context.ct_captions.Add(new CaptionFile { VideoID = "1", Caption = "String" });
                 context.SaveChanges();
             }
 
@@ -31,7 +31,7 @@ namespace Logic.Repositories.Tests
                 CaptionRepos captionrepos = new CaptionRepos(context);
                 CaptionFile capget;
                 capget = await captionrepos.getCaptionsAsync("1");
-                Assert.AreEqual(capget.Data, "String");
+                Assert.AreEqual(capget.Caption, "String");
                 
             }
         }
@@ -44,7 +44,7 @@ namespace Logic.Repositories.Tests
 
             using (var context = new AppDbContext(options))
             {
-                context.ct_captions.Add(new CaptionFile { VideoID = "1", Data = "String" });
+                context.ct_captions.Add(new CaptionFile { VideoID = "1", Caption = "String" });
                 context.SaveChanges();
             }
 
@@ -66,7 +66,7 @@ namespace Logic.Repositories.Tests
 
             using (var context = new AppDbContext(options))
             {
-                context.ct_captions.Add(new CaptionFile { VideoID = "1", Data = "String" });
+                context.ct_captions.Add(new CaptionFile { VideoID = "1", Caption = "String" });
                 context.SaveChanges();
             }
 
@@ -75,7 +75,7 @@ namespace Logic.Repositories.Tests
                 CaptionRepos captionrepos = new CaptionRepos(context);
                 CaptionFile captionfile = new CaptionFile();
                 captionfile.VideoID = "2";
-                captionfile.Data = "String2";
+                captionfile.Caption = "String2";
                 await captionrepos.addCaptionAsync(captionfile);
                 CaptionFile capget;
                 capget = await captionrepos.getCaptionsAsync("2");
